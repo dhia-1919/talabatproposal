@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boolanga — AI-Powered Rider Compliance Auditing | Proposal for Talabat</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1D3A;
+    --navy-mid: #122B52;
+    --navy-light: #1A3766;
+    --white: #FFFFFF;
+    --off-white: #F4F6F9;
+    --gray100: #E8ECF1;
+    --gray200: #D0D6E0;
+    --gray400: #8D96A8;
+    --gray600: #5A6478;
+    --orange: #FF6B35;
+    --orange-soft: rgba(255,107,53,0.1);
+    --orange-border: rgba(255,107,53,0.25);
+    --green: #2ECC71;
+    --red: #E74C3C;
+    --font: 'Manrope', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: var(--white); color: var(--navy); -webkit-font-smoothing: antialiased; }
+
+  /* ── Tags ── */
+  .tag { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+  .tag--orange { color: var(--orange); }
+  .tag--navy { color: var(--navy); }
+  .tag--green { color: var(--green); }
+  .tag--red { color: var(--red); }
+  .tag--gray { color: var(--gray400); }
+
+  /* ── Headings ── */
+  .h2 { font-family: var(--font); font-size: clamp(24px,3.8vw,36px); font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 10px; }
+  .lead { font-family: var(--font); font-size: 15px; color: var(--gray600); line-height: 1.7; max-width: 640px; margin-bottom: 32px; }
+
+  /* ── Layout ── */
+  .wrap { max-width: 840px; margin: 0 auto; padding: 48px 28px 72px; }
+  .divider { height: 1px; background: var(--gray100); margin: 56px 0; }
+  .flex { display: flex; gap: 16px; flex-wrap: wrap; }
+  .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 14px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+  /* ── Hero ── */
+  .hero { background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%); padding: 56px 28px 44px; }
+  .hero__inner { max-width: 840px; margin: 0 auto; }
+  .hero__label { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; color: var(--gray400); margin-bottom: 28px; text-transform: uppercase; }
+  .hero__title { font-family: var(--font); font-size: clamp(30px,5vw,48px); font-weight: 800; color: var(--white); line-height: 1.1; margin-bottom: 14px; }
+  .hero__sub { font-family: var(--font); font-size: 16px; color: var(--gray200); max-width: 520px; line-height: 1.6; }
+
+  /* ── Stats bar ── */
+  .stats { display: flex; gap: 1px; flex-wrap: wrap; background: var(--off-white); border-radius: 10px; margin-bottom: 28px; }
+  .stat { text-align: center; flex: 1 1 140px; padding: 20px 12px; }
+  .stat__val { font-family: var(--font); font-size: 38px; font-weight: 800; line-height: 1; }
+  .stat__unit { font-family: var(--mono); font-size: 12px; color: var(--gray400); }
+  .stat__label { font-family: var(--font); font-size: 12px; color: var(--gray400); margin-top: 4px; }
+
+  /* ── Cards ── */
+  .card { background: var(--off-white); border-radius: 10px; padding: 20px 22px; }
+  .card--white { background: var(--white); border: 1px solid var(--gray100); }
+  .card--bordered { background: var(--white); border: 1px solid var(--gray100); border-radius: 10px; padding: 24px 22px; }
+  .card__top-navy { border-top: 3px solid var(--navy); }
+  .card__top-orange { border-top: 3px solid var(--orange); }
+  .card__title { font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .card__text { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.7; }
+
+  /* ── Module cards ── */
+  .mod-tag { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 8px; }
+  .mod-title { font-family: var(--font); font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+  .mod-desc { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.65; margin-bottom: 16px; }
+
+  /* ── Checks ── */
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .check__icon { width: 18px; height: 18px; border-radius: 4px; background: var(--orange-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--orange); font-size: 11px; font-weight: 800; }
+  .check__text { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.5; }
+
+  /* ── Callout ── */
+  .callout { background: var(--orange-soft); border: 1px solid var(--orange-border); border-radius: 8px; padding: 16px 20px; }
+  .callout__title { font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 4px; }
+  .callout__text { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.6; }
+
+  /* ── Steps ── */
+  .steps { background: var(--off-white); border-radius: 10px; padding: 4px 22px; }
+  .step { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; }
+  .step__num { width: 32px; height: 32px; border-radius: 8px; background: var(--orange-soft); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--orange); flex-shrink: 0; }
+  .step__title { font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .step__desc { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.6; }
+  .step-divider { border-bottom: 1px solid var(--gray100); }
+
+  /* ── Pricing ── */
+  .price-card { background: var(--white); border: 1px solid var(--gray100); border-radius: 10px; padding: 28px 24px; position: relative; transition: box-shadow 0.25s, transform 0.25s; }
+  .price-card:hover { box-shadow: 0 8px 28px rgba(11,29,58,0.1); transform: translateY(-2px); }
+  .price-card--best { border: 2px solid var(--orange); }
+  .price-pill { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--orange); color: var(--white); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+  .price-tag { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray400); margin-bottom: 6px; }
+  .price-title { font-family: var(--font); font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 16px; }
+  .price-amount { font-family: var(--font); font-size: 32px; font-weight: 800; color: var(--navy); }
+  .price-note { font-family: var(--mono); font-size: 11px; color: var(--gray400); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--gray100); }
+  .price-contract { font-family: var(--mono); font-size: 9px; color: var(--gray400); margin-top: 14px; letter-spacing: 0.05em; }
+
+  /* ── Table ── */
+  .tbl-wrap { background: var(--white); border: 1px solid var(--gray100); border-radius: 10px; overflow: hidden; }
+  .tbl-header { padding: 16px 18px 8px; }
+  .tbl-header__title { font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--navy); }
+  .tbl-header__sub { font-family: var(--mono); font-size: 10px; color: var(--gray400); margin-top: 2px; }
+  .tbl-footer { padding: 10px 18px; background: var(--off-white); font-family: var(--mono); font-size: 10px; color: var(--gray400); }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray400); padding: 10px 14px; border-bottom: 2px solid var(--gray100); background: var(--off-white); }
+  td { font-family: var(--font); font-size: 13px; color: var(--gray600); padding: 11px 14px; border-bottom: 1px solid var(--gray100); }
+  th.right, td.right { text-align: right; }
+  td.bold { font-weight: 700; color: var(--navy); }
+  td.highlight { color: var(--orange); }
+
+  /* ── Numbered reasons ── */
+  .reason { display: flex; gap: 16px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid var(--gray100); }
+  .reason__num { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--orange); opacity: 0.3; flex-shrink: 0; width: 34px; line-height: 1; }
+  .reason__title { font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .reason__text { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.7; }
+
+  /* ── Security cards ── */
+  .sec-card { background: var(--off-white); border-radius: 8px; padding: 18px; }
+  .sec-card__title { font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+  .sec-card__text { font-family: var(--font); font-size: 12px; color: var(--gray600); line-height: 1.6; }
+
+  /* ── FAQ ── */
+  .faq { border-bottom: 1px solid var(--gray100); }
+  .faq__btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 0; background: none; border: none; cursor: pointer; text-align: left; }
+  .faq__q { font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--navy); padding-right: 16px; }
+  .faq__icon { font-family: var(--mono); font-size: 16px; color: var(--gray400); transition: transform 0.2s; flex-shrink: 0; }
+  .faq__icon.open { transform: rotate(45deg); }
+  .faq__a { font-family: var(--font); font-size: 13px; color: var(--gray600); line-height: 1.7; padding: 0 0 18px; max-width: 620px; display: none; }
+  .faq__a.open { display: block; }
+
+  /* ── CTA ── */
+  .cta { background: var(--navy); border-radius: 10px; padding: 36px 32px; text-align: center; }
+  .cta__title { font-family: var(--font); font-size: 22px; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+  .cta__name { font-family: var(--font); font-size: 14px; color: var(--gray200); margin-bottom: 3px; }
+  .cta__email { font-family: var(--mono); font-size: 12px; color: var(--gray400); }
+
+  .footer { text-align: center; padding: 28px 0 0; margin-top: 40px; border-top: 1px solid var(--gray100); }
+  .footer__text { font-family: var(--mono); font-size: 9px; color: var(--gray400); letter-spacing: 0.14em; }
+
+  @media print {
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .price-card:hover { transform: none; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero__inner">
+    <div class="hero__label">BOOLANGA — PROPOSAL FOR TALABAT · APRIL 2026</div>
+    <h1 class="hero__title">AI-Powered Rider<br>Compliance Auditing</h1>
+    <p class="hero__sub">Faster checks. Full fleet visibility. Zero data exposure. A managed AI compliance engine that scales across all markets.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══ CHALLENGE ═══ -->
+  <div class="tag tag--orange">THE CHALLENGE</div>
+  <h2 class="h2">Manual audits hit a ceiling</h2>
+  <p class="lead">As rider fleets grow across markets, patrol-based compliance checks cover only a fraction of active riders on any given day. The rest ride unchecked — a compliance blind spot that scales with fleet size.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat__val" style="color:var(--orange)">10-12<span class="stat__unit"> min</span></div>
+      <div class="stat__label">Per manual check</div>
+    </div>
+    <div class="stat">
+      <div class="stat__val" style="color:var(--red)">~38<span class="stat__unit">%</span></div>
+      <div class="stat__label">Typical fleet coverage</div>
+    </div>
+    <div class="stat">
+      <div class="stat__val" style="color:var(--gray400)">60<span class="stat__unit">%</span></div>
+      <div class="stat__label">Patroller time on audits</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__title">Hiring alone doesn't solve this</div>
+    <div class="card__text">Each additional patroller costs approximately AED 68,500 in year one. Adding 15 patrollers to reach full coverage on a 40K fleet costs over AED 1M annually — and still only reaches ~84% when the fleet grows to 55K. The economics of headcount-based compliance don't scale.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ SOLUTION ═══ -->
+  <div class="tag tag--orange">THE SOLUTION</div>
+  <h2 class="h2">Two modules, one compliance engine</h2>
+  <p class="lead">Module A makes your patrollers dramatically faster and more consistent. Module B extends coverage to every rider, every shift — without a single new hire.</p>
+
+  <div class="flex" style="margin-bottom:20px">
+    <div class="card--bordered card__top-navy" style="flex:1 1 300px">
+      <div class="mod-tag" style="color:var(--navy)">MODULE A — AI-ASSISTED T-PATROL</div>
+      <div class="mod-title">Supercharge existing patrollers</div>
+      <div class="mod-desc">AI integrates directly into the existing Boolanga Compliance Auditor App. Patrollers take a photo — AI instantly evaluates gear, uniform, branding, and safety equipment. Results auto-populate the audit report and sync to OMS.</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Check time reduced from 10-12 min to ~6 min</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Standardized scoring across all 8 markets</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Eliminates subjective variance between patrollers</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Direct OMS sync — zero manual data entry</span></div>
+    </div>
+    <div class="card--bordered card__top-orange" style="flex:1 1 300px">
+      <div class="mod-tag" style="color:var(--orange)">MODULE B — RIDER PRE-SHIFT SELF-CHECK</div>
+      <div class="mod-title">Every rider visible, every shift</div>
+      <div class="mod-desc">Standalone web-based tool — no app install. Before each shift, riders take a selfie in full gear. AI evaluates compliance in real-time. Patrollers receive prioritized lists: who failed, who skipped, who hasn't been checked in 30+ days.</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Coverage extends from patroller-only to entire fleet</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Rider images never leave Boolanga infrastructure</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Patrollers become targeted enforcement, not random patrol</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Full audit trail — every rider, every shift</span></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout__title">Why combined is greater than the sum of parts</div>
+    <div class="callout__text">Module A alone improves the ~38% of riders patrollers already reach. Module B alone gives broad coverage. Together, every rider self-checks before shift (B), and patrollers focus exclusively on flagged riders (A). Coverage goes from ~38% to effectively 100% — without a single additional hire.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ FLOW ═══ -->
+  <div class="tag tag--orange">HOW IT WORKS</div>
+  <h2 class="h2">Daily compliance flow</h2>
+  <p class="lead">A continuous loop that catches non-compliance before riders start their shift — not hours after.</p>
+
+  <div class="steps">
+    <div class="step"><div class="step__num">1</div><div><div class="step__title">Pre-Shift Self-Check</div><div class="step__desc">Rider opens the web-based check-in tool, takes a photo in full gear. Under 60 seconds. No app install.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">2</div><div><div class="step__title">AI Evaluation</div><div class="step__desc">Computer vision analyzes uniform, branding, helmet, safety gear, and windshield. Real-time pass/fail with violation codes.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">3</div><div><div class="step__title">OMS Status Update</div><div class="step__desc">Compliance status logs automatically. Passed riders proceed. Failed riders get remediation instructions.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">4</div><div><div class="step__title">Targeted Patrol</div><div class="step__desc">Patrollers receive a prioritized list: failed self-checks, skipped checks, riders not checked in 30+ days.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">5</div><div><div class="step__title">Full Audit Trail</div><div class="step__desc">Every check logged with timestamp, photo evidence, AI score, and pass/fail. Complete visibility across all markets.</div></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ PRICING ═══ -->
+  <div class="tag tag--navy">PRICING</div>
+  <h2 class="h2">Flexible pricing, predictable cost</h2>
+  <p class="lead">Per-picture if you want costs tied to usage. Unlimited if you want a fixed monthly spend. Bundle both modules for the best economics.</p>
+
+  <div class="grid4" style="margin-bottom:32px">
+    <!-- A per-pic -->
+    <div class="price-card">
+      <div class="price-tag">OPTION A · PER PICTURE</div>
+      <div class="price-title">T-Patrol AI</div>
+      <div class="price-amount">€0.008</div>
+      <div class="price-note">per check</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">AI visual compliance scoring</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Real-time pass/fail + violation codes</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Automated OMS sync</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Model retraining & accuracy monitoring</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Quarterly business reviews</span></div>
+      <div class="price-contract">12-MONTH CONTRACT</div>
+    </div>
+    <!-- A unlimited -->
+    <div class="price-card">
+      <div class="price-tag">OPTION A · UNLIMITED</div>
+      <div class="price-title">T-Patrol AI</div>
+      <div class="price-amount">€4,500</div>
+      <div class="price-note">per month — unlimited checks</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Everything in per-picture, plus:</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">No volume cap</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Fixed cost regardless of output</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Ideal as patroller efficiency grows</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Cost certainty for budgeting</span></div>
+      <div class="price-contract">24-MONTH CONTRACT</div>
+    </div>
+    <!-- B per-pic -->
+    <div class="price-card">
+      <div class="price-tag">OPTION B · PER PICTURE</div>
+      <div class="price-title">T-Patrol + Self-Check</div>
+      <div class="price-amount">€0.004</div>
+      <div class="price-note">per check — 50% lower rate</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Everything in Option A, plus:</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Rider pre-shift self-check tool</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Prioritized patrol lists from AI</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Full fleet coverage</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">€8,000 one-time setup fee</span></div>
+      <div class="price-contract">12-MONTH CONTRACT</div>
+    </div>
+    <!-- B unlimited BEST -->
+    <div class="price-card price-card--best">
+      <div class="price-pill">BEST VALUE</div>
+      <div class="price-tag">OPTION B · UNLIMITED</div>
+      <div class="price-title">T-Patrol + Self-Check</div>
+      <div class="price-amount">€6,500</div>
+      <div class="price-note">per month — unlimited checks</div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Everything in per-picture B, plus:</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Unlimited rider + patroller checks</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Fixed cost at any volume</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Setup fee included</span></div>
+      <div class="check"><div class="check__icon">✓</div><span class="check__text">Best economics at scale</span></div>
+      <div class="price-contract">24-MONTH CONTRACT</div>
+    </div>
+  </div>
+
+  <!-- Volume table -->
+  <div class="tbl-wrap" style="margin-bottom:28px">
+    <div class="tbl-header">
+      <div class="tbl-header__title">Monthly cost at different volumes</div>
+      <div class="tbl-header__sub">All in EUR. Highlighted = per-picture exceeds unlimited.</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Monthly Checks</th><th class="right">A Per-Pic</th><th class="right">A Unlimited</th><th class="right">B Per-Pic</th><th class="right">B Unlimited</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">400K</td><td class="right">€3,200</td><td class="right">€4,500</td><td class="right">€1,600</td><td class="right">€6,500</td></tr>
+          <tr><td class="bold">600K</td><td class="right highlight">€4,800</td><td class="right">€4,500</td><td class="right">€2,400</td><td class="right">€6,500</td></tr>
+          <tr><td class="bold">1M</td><td class="right highlight">€8,000</td><td class="right">€4,500</td><td class="right">€4,000</td><td class="right">€6,500</td></tr>
+          <tr><td class="bold">1.5M</td><td class="right highlight">€12,000</td><td class="right">€4,500</td><td class="right">€6,000</td><td class="right">€6,500</td></tr>
+          <tr><td class="bold">2.5M</td><td class="right highlight">€20,000</td><td class="right">€4,500</td><td class="right highlight">€10,000</td><td class="right">€6,500</td></tr>
+          <tr><td class="bold">5M</td><td class="right highlight">€40,000</td><td class="right">€4,500</td><td class="right highlight">€20,000</td><td class="right">€6,500</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl-footer">Crossover: A at ~563K checks · B at ~1.63M checks</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ WHY NOT ONE-TIME ═══ -->
+  <div class="tag tag--red">ADDRESSING THE QUESTION</div>
+  <h2 class="h2">Why a one-time fee doesn't work</h2>
+  <p class="lead">This is the most common question we receive on AI pricing. Here's a transparent breakdown of why recurring pricing is the only model that protects both parties.</p>
+
+  <div class="reason"><div class="reason__num">01</div><div><div class="reason__title">The AI runs on dedicated GPU infrastructure — 24/7</div><div class="reason__text">AI visual compliance requires dedicated high-performance GPU compute running continuously. This infrastructure has a fixed monthly cost whether it processes zero images or three million. A one-time fee cannot cover an ongoing hardware commitment.</div></div></div>
+  <div class="reason"><div class="reason__num">02</div><div><div class="reason__title">Your gear standards aren't static — the AI can't be either</div><div class="reason__text">Talabat changes uniforms, introduces new branding, rolls out seasonal gear, adjusts safety requirements across markets. A one-time model is frozen at delivery. Within 6 months it scores against outdated standards. Ongoing pricing covers continuous retraining across all 8 markets.</div></div></div>
+  <div class="reason"><div class="reason__num">03</div><div><div class="reason__title">AI accuracy degrades without active monitoring</div><div class="reason__text">Image quality varies by device, lighting, and rider behavior. Without continuous monitoring, false positive and negative rates drift upward. The service includes real-time accuracy tracking, weekly precision reporting, and automatic model correction.</div></div></div>
+  <div class="reason"><div class="reason__num">04</div><div><div class="reason__title">Building internally is recurring cost too</div><div class="reason__text">Internal build means developer salaries (recurring), GPU compute (recurring), cloud infrastructure (recurring), and maintenance (recurring). The choice isn't one-time vs. recurring — it's your recurring cost vs. ours. Ours is lower because infrastructure is shared across clients.</div></div></div>
+  <div class="reason" style="border-bottom:none"><div class="reason__num">05</div><div><div class="reason__title">Per-check pricing is lower risk for you</div><div class="reason__text">Costs scale proportionally. Low-usage month? Lower cost. Pause a market? No charges. Scale to new countries? Predictable growth. You never overpay for unused capacity.</div></div></div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ UNIT ECONOMICS ═══ -->
+  <div class="tag tag--green">UNIT ECONOMICS</div>
+  <h2 class="h2">Cost per audit — the real comparison</h2>
+
+  <div class="tbl-wrap" style="margin-bottom:24px">
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Scenario</th><th class="right">Monthly Audits</th><th class="right">Coverage</th><th class="right">Cost / Audit</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Manual only (36 patrollers)</td><td class="right">~15,000</td><td class="right">38%</td><td class="right">AED 13.70</td></tr>
+          <tr><td class="bold">AI-assisted patrol (Opt A)</td><td class="right">~33,000</td><td class="right">82%</td><td class="right">~AED 7.00</td></tr>
+          <tr><td class="bold">AI + Self-Check (Opt B)</td><td class="right">46,000+</td><td class="right">95-100%</td><td class="right highlight">~AED 5.50</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat__val" style="color:var(--green)">49<span class="stat__unit">%</span></div><div class="stat__label">Cost-per-audit reduction</div></div>
+    <div class="stat"><div class="stat__val" style="color:var(--navy)">2.2<span class="stat__unit">x</span></div><div class="stat__label">Coverage multiplier</div></div>
+    <div class="stat"><div class="stat__val" style="color:var(--orange)">~6<span class="stat__unit"> min</span></div><div class="stat__label">Average check time</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ SECURITY ═══ -->
+  <div class="tag tag--orange">DATA & SECURITY</div>
+  <h2 class="h2">Complete data isolation</h2>
+
+  <div class="grid2" style="margin-bottom:0">
+    <div class="sec-card"><div class="sec-card__title">No API integration</div><div class="sec-card__text">AI operates within Boolanga infrastructure. No connection to Talabat's rider app or systems.</div></div>
+    <div class="sec-card"><div class="sec-card__title">Images stay in Boolanga</div><div class="sec-card__text">Photos never leave our servers. Talabat receives only structured data — pass/fail, violation codes, timestamps.</div></div>
+    <div class="sec-card"><div class="sec-card__title">External security audit</div><div class="sec-card__text">Independent global IT security team engaged. Periodic review access available to Talabat's security team.</div></div>
+    <div class="sec-card"><div class="sec-card__title">Encryption & access control</div><div class="sec-card__text">Data encrypted at rest and in transit. Role-based access. Full audit logging. Regular vulnerability assessments.</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div class="tag tag--gray">FAQ</div>
+  <h2 class="h2">Common questions</h2>
+
+  <div class="faq">
+    <button class="faq__btn" onclick="toggleFaq(this)">
+      <span class="faq__q">Can we start with Option A and upgrade to B later?</span>
+      <span class="faq__icon">+</span>
+    </button>
+    <div class="faq__a">Yes. Option A deploys independently. If you add Module B later, bundle pricing applies from that point. However, launching both together gives the best per-check rate from day one and avoids a second onboarding cycle.</div>
+  </div>
+  <div class="faq">
+    <button class="faq__btn" onclick="toggleFaq(this)">
+      <span class="faq__q">What if accuracy is below expectations during pilot?</span>
+      <span class="faq__icon">+</span>
+    </button>
+    <div class="faq__a">We run a validation pilot in a single city before full rollout. If accuracy doesn't meet the agreed threshold (≥95%), we continue tuning at no additional cost until it does. You don't pay for full service until accuracy is validated.</div>
+  </div>
+  <div class="faq">
+    <button class="faq__btn" onclick="toggleFaq(this)">
+      <span class="faq__q">How long does deployment take?</span>
+      <span class="faq__icon">+</span>
+    </button>
+    <div class="faq__a">Module A: 4-6 weeks. Module B adds 3-4 weeks for the self-check tool build. Full deployment across all markets: 8-12 weeks from kickoff.</div>
+  </div>
+  <div class="faq">
+    <button class="faq__btn" onclick="toggleFaq(this)">
+      <span class="faq__q">What compliance checks can the AI perform?</span>
+      <span class="faq__icon">+</span>
+    </button>
+    <div class="faq__a">Visual: uniform condition, branding placement and quality, helmet type and condition, safety gear (vest, gloves), windshield status, and overall presentation. Non-visual checks (hygiene, odor, politeness) remain manual fields in the patroller workflow.</div>
+  </div>
+  <div class="faq">
+    <button class="faq__btn" onclick="toggleFaq(this)">
+      <span class="faq__q">What about adding new markets?</span>
+      <span class="faq__icon">+</span>
+    </button>
+    <div class="faq__a">New markets are onboarded by training the AI on that market's specific gear standards and branding guidelines. Typical onboarding: 2-3 weeks. Volume from new markets is included in existing pricing.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ NEXT STEPS ═══ -->
+  <div class="tag tag--orange">NEXT STEPS</div>
+  <h2 class="h2">From proposal to production</h2>
+
+  <div class="steps" style="margin-bottom:36px">
+    <div class="step"><div class="step__num">1</div><div><div class="step__title">Confirm scope and pricing option</div><div class="step__desc">Align on Option A or B, per-picture or unlimited. Finalize contract terms and rollout sequence.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">2</div><div><div class="step__title">AI training data and label sets</div><div class="step__desc">Define violation types, gear standards, and tolerances per market. Boolanga prepares the AI model using existing audit data.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">3</div><div><div class="step__title">Pilot in one city</div><div class="step__desc">Live AI-assisted audits with a limited patroller group in Dubai. Validate accuracy, speed, and OMS integration.</div></div></div>
+    <div class="step-divider"></div>
+    <div class="step"><div class="step__num">4</div><div><div class="step__title">Validation and full rollout</div><div class="step__desc">Once accuracy ≥95%, expand to remaining markets. Full deployment within 8-12 weeks of kickoff.</div></div></div>
+  </div>
+
+  <!-- ═══ CTA ═══ -->
+  <div class="cta">
+    <div class="cta__title">Ready to move forward?</div>
+    <div class="cta__name">Hamdan Albakr — Partnerships Senior Expert, MENA</div>
+    <div class="cta__email">hamdan@boolanga.com</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer__text">BOOLANGA © 2026 — CONFIDENTIAL</div>
+  </div>
+
+</div>
+
+<script>
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const icon = btn.querySelector('.faq__icon');
+  const isOpen = answer.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq__a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq__icon').forEach(i => i.classList.remove('open'));
+  // Toggle current
+  if (!isOpen) {
+    answer.classList.add('open');
+    icon.classList.add('open');
+  }
+}
+</script>
+
+</body>
+</html>
